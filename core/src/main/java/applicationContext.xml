@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans>
+    <bean id="student" class="com.giant.study.Student">
+        <constructor-arg type="int" value="20"></constructor-arg>
+        <constructor-arg type="java.lang.String" value="LYQ"></constructor-arg>
+        <constructor-arg type="com.giant.study.Address" ref="address"></constructor-arg>
+    </bean>
+    <bean id="address" class="com.giant.study.Address">
+        <constructor-arg type="java.lang.String" value="北京"></constructor-arg>
+    </bean>
+    <bean id="teacher" class="com.giant.study.Teacher">
+        <constructor-arg type="com.giant.study.Student" ref="student"></constructor-arg>
+    </bean>
+    <context scan-packages="com.giant.study,com.giant.study.test"/>
+    <aop proxy="jdk">
+        <advices scan-packages="com.giant.study.advice">
+
+        </advices>
+        <advice id="advice1" class="com.giant.advice.test.BAdvice" pointcut="execution(com.giant.study.*.*(...))">
+
+        </advice>
+    </aop>
+</beans>
