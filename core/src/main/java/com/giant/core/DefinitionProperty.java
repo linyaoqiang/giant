@@ -1,9 +1,7 @@
 package com.giant.core;
 
 import com.giant.aop.AopContext;
-import com.giant.aop.AopProxy;
 import com.giant.aop.AopProxyFactory;
-import com.giant.aop.DefaultAopHandler;
 import com.giant.bean.BeanInformation;
 import com.giant.bean.Property;
 import com.giant.commons.opeator.ReflectOperator;
@@ -18,6 +16,13 @@ public class DefinitionProperty {
     private AopProxyFactory factory = AopProxyFactory.INSTANCE;
     private AopContext aop;
 
+    /**
+     * 为Bean的属性进行注入
+     * @param beans
+     * @param infos
+     * @param beanFactory
+     * @throws NoSuchFieldException
+     */
     public void defineProperty(Map<String, Object> beans, Map<String, BeanInformation> infos, AbstractBeanFactory beanFactory) throws NoSuchFieldException {
         for (String key : infos.keySet()) {
             Object o = beans.get(key);
@@ -26,12 +31,14 @@ public class DefinitionProperty {
             if (info.getProperties() == null)
                 continue;
 
+            //遍历每一个Property
             for (Property property : info.getProperties()) {
                 String name = property.getName();
                 String value = property.getValue();
                 Field field = clazz.getDeclaredField(name);
                 Class<?> fieldClass = field.getType();
                 if (value != null) {
+                    //注入值
                     injectValue(fieldClass, field, o, value);
                     continue;
                 }
@@ -39,6 +46,7 @@ public class DefinitionProperty {
                 if (ref == null || ref.equals("")) {
                     ref = StringOperator.firstToLowerCase(fieldClass.getSimpleName());
                 }
+                //注入引用
                 boolean flag = injectRef(beans, fieldClass, field, o, ref);
                 if (!flag)
                     logger.error("Unable to inject " + name + " for " + info);
@@ -46,26 +54,51 @@ public class DefinitionProperty {
         }
     }
 
+    /**
+     * 注入引用
+     *
+     * @param beans      Bean的实例容器
+     * @param fieldClass 字段类型
+     * @param field      字段
+     * @param object     实例
+     * @param ref        引用标识符
+     * @return
+     */
     public boolean injectRef(Map<String, Object> beans, Class<?> fieldClass, Field field, Object object, String ref) {
         for (String keyFRef : beans.keySet()) {
             Object o = beans.get(keyFRef);
             Class<?> clazz = o.getClass();
             if (aop != null && aop.isUseAop()) {
+                //使用aop渲染后的Bean
                 o = aop.getAopBeans().get(keyFRef);
             }
+            //根据类型进行注入
             if (fieldClass.equals(clazz) || equalsInterfaces(fieldClass, clazz)) {
                 ReflectOperator.doFieldSet(field, object, o);
                 return true;
             }
+            //根据名称进行诸如
             if (keyFRef.equals(ref)) {
                 ReflectOperator.doFieldSet(field, object, o);
                 return true;
             }
         }
+
+        //注入失败
         return false;
     }
 
+    /**
+     * 注入值
+     * @param fieldClass 字段类型
+     * @param field      字段
+     * @param object     实例
+     * @param value      值
+     */
     public void injectValue(Class<?> fieldClass, Field field, Object object, String value) {
+        /**
+         * 判断类型，并进行注入
+         */
         if (value.equals("") || fieldClass.equals(String.class)) {
             ReflectOperator.doFieldSet(field, object, value);
         } else if (ReflectOperator.isInteger(fieldClass) || ReflectOperator.isInt(fieldClass)) {
@@ -81,12 +114,21 @@ public class DefinitionProperty {
         }
     }
 
+    /**
+     * fieldClass是否是该clazz接口的一个类型
+     *
+     * @param fieldClass 字段类型
+     * @param clazz
+     * @return true|false
+     */
     public boolean equalsInterfaces(Class<?> fieldClass, Class<?> clazz) {
         Class<?>[] interfaces = clazz.getInterfaces();
         if (interfaces == null)
             return false;
         boolean flag = false;
-
+        /**
+         * 是否匹配接口
+         */
         for (Class<?> iC : interfaces) {
             if (iC.equals(fieldClass)) {
                 flag = true;

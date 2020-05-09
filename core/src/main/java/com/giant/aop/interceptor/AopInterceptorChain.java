@@ -2,6 +2,9 @@ package com.giant.aop.interceptor;
 
 import java.lang.reflect.Method;
 
+/**
+ * 方法拦截器链
+ */
 public interface AopInterceptorChain {
     void addInterceptor(AopInterceptor interceptor);
     void removeInterceptor(AopInterceptor interceptor);

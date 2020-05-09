@@ -2,6 +2,9 @@ package com.giant.aop.interceptor;
 
 import java.lang.reflect.Method;
 
+/**
+ * 方法拦截器适配器，抽象概括
+ */
 public abstract class AbstractAopInterceptor implements AopInterceptor {
     protected String pointcut;
     protected Method adviceMethod;

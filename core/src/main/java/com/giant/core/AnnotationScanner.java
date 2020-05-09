@@ -1,6 +1,7 @@
 package com.giant.core;
 
 import com.giant.annotation.*;
+import com.giant.bean.ApplicationStandardSpace;
 import com.giant.bean.BeanInformation;
 import com.giant.bean.Property;
 import com.giant.commons.opeator.FileOperator;
@@ -26,11 +27,11 @@ public class AnnotationScanner implements AnnotationScan {
         if (root == null)
             return null;
 
-        Element context = root.element("context");
-
-        if (context == null || context.attributeValue("scan-packages") == null)
+        Element context = root.element(ApplicationStandardSpace.CONTEXT);
+        //如果没有context标签或者context没有scan-packages这个属性则直接返回null
+        if (context == null || context.attributeValue(ApplicationStandardSpace.CONTEXT_SCAN_PACKAGES) == null)
             return null;
-        String[] packageNames = context.attributeValue("scan-packages").split(",");
+        String[] packageNames = context.attributeValue(ApplicationStandardSpace.CONTEXT_SCAN_PACKAGES).split(",");
         Map<String, BeanInformation> infos = new HashMap<>();
         for (String packageName : packageNames) {
             String packagePath = packageName.replace(".", "/");
@@ -55,20 +56,30 @@ public class AnnotationScanner implements AnnotationScan {
                 Class<?> clazz = Class.forName(className);
                 BeanInformation info = new BeanInformation();
                 String id = annotationValue(clazz);
+                /**
+                 * 如果id为null。说明没有配置注解
+                 */
                 if (id == null)
                     continue;
-
+                //如果id为空串, id为类名的首字母小写
                 if (id.equals("")) {
                     id = StringOperator.firstToLowerCase(clazz.getSimpleName());
                 }
+                //设置配置信息
                 info.setId(id);
                 info.setClassName(className);
+                //添加
                 infos.put(id, info);
             }
         }
         return infos;
     }
 
+    /**
+     * 查看是否有配置注解，并返回注解中的值
+     * @param clazz beanClass
+     * @return  注解中的值 String
+     */
     public String annotationValue(Class<?> clazz) {
         if (clazz.getDeclaredAnnotation(Repository.class) != null) {
             return clazz.getDeclaredAnnotation(Repository.class).value();
@@ -82,8 +93,14 @@ public class AnnotationScanner implements AnnotationScan {
         return null;
     }
 
+    /**
+     * 将字段封装成Property并返还
+     * @param field
+     * @return  Property
+     */
     public Property fieldValue(Field field) {
         Property property = null;
+        //如果使用Autowired进行进行配置，则映射成一个引用Property
         if (field.getDeclaredAnnotation(Autowired.class) != null) {
             Autowired autowired = field.getDeclaredAnnotation(Autowired.class);
             property = new Property();
@@ -94,6 +111,7 @@ public class AnnotationScanner implements AnnotationScan {
             }
             property.setRef(ref);
         } else if (field.getDeclaredAnnotation(Value.class) != null) {
+            //如果使用Value进行配置，则解析成valueProperty
             Value value = field.getDeclaredAnnotation(Value.class);
             property = new Property();
             property.setName(field.getName());
@@ -101,7 +119,6 @@ public class AnnotationScanner implements AnnotationScan {
         }
         return property;
     }
-
     @Override
     public void injectionProcess(Map<String, Object> beans, Map<String, BeanInformation> infos) {
         for (String key : beans.keySet()) {

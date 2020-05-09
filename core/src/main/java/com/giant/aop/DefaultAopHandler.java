@@ -3,12 +3,7 @@ package com.giant.aop;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.List;
-import java.util.regex.Pattern;
 
-import com.giant.annotation.Pointcut;
-import com.giant.aop.bean.AdviceExecutor;
 import com.giant.aop.interceptor.AopInterceptorChain;
 import org.apache.log4j.Logger;
 
@@ -19,8 +14,8 @@ public class DefaultAopHandler implements InvocationHandler, AopHandler {
 
     public DefaultAopHandler(AopInterceptorChain chain, Object target) {
         super();
-        this.target=target;
-        this.chain=chain;
+        this.target = target;
+        this.chain = chain;
     }
 
     @Override
@@ -35,7 +30,7 @@ public class DefaultAopHandler implements InvocationHandler, AopHandler {
             e.printStackTrace();
             chain.doException(method, args, e);
         }
-        chain.doAfter(method,args,returnValue);
+        chain.doAfter(method, args, returnValue);
         return returnValue;
     }
 }

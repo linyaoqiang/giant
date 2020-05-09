@@ -1,5 +1,8 @@
 package com.giant.bean;
 
+/**
+ * 属性的配置信息
+ */
 public class Property {
     private String name;
     private String value;

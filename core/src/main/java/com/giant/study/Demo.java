@@ -11,9 +11,6 @@ public class Demo {
     public static void main(String[] args) throws Exception {
         BeanFactoryBuilder builder = new BeanFactoryBuilder();
         BeanFactory app=builder.build("applicationContext.xml");
-        Student student = app.getBean("student",Student.class);
-        HelloWorld helloWorld = app.getBean("helloWorldImpl",HelloWorldImpl.class);
-        //helloWorld.sayHello();
-        student.getHelloWorld().sayHello();
+
     }
 }

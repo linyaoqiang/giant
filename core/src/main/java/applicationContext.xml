@@ -11,13 +11,10 @@
     <bean id="teacher" class="com.giant.study.Teacher">
         <constructor-arg type="com.giant.study.Student" ref="student"></constructor-arg>
     </bean>
-    <context scan-packages="com.giant.study,com.giant.study.test"/>
+    <context scan-packages="com.giant.study.test,com.giant.study"></context>
     <aop proxy="jdk">
         <advices scan-packages="com.giant.study.advice">
 
         </advices>
-        <advice id="advice1" class="com.giant.advice.test.BAdvice" pointcut="execution(com.giant.study.*.*(...))">
-
-        </advice>
     </aop>
 </beans>

@@ -1,11 +1,12 @@
 package com.giant.aop;
 
-import com.giant.aop.interceptor.AopInterceptorChain;
 import com.giant.commons.opeator.ReflectOperator;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 
+/**
+ * AopProxy代理，获取代理对象
+ */
 public class AopProxy {
     private Object proxy;
     private Object target;
@@ -15,12 +16,15 @@ public class AopProxy {
         this.target = target;
     }
 
+    //核心方法
     public void bind(InvocationHandler handler) {
-        proxy=ReflectOperator.createJdkProxy(target,handler);
+        //proxy有可能为null
+        proxy = ReflectOperator.createJdkProxy(target, handler);
     }
-
+    //获取实例
     public Object getProxy() {
-        if(proxy==null){
+        //如果proxy为null，则直接返回target
+        if (proxy == null) {
             return target;
         }
         return proxy;

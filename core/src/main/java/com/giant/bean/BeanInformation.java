@@ -2,6 +2,9 @@ package com.giant.bean;
 
 import java.util.List;
 
+/**
+ * Bean的配置信息
+ */
 public class BeanInformation {
     private String id;
     private String className;

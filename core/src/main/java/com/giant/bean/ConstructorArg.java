@@ -1,5 +1,8 @@
 package com.giant.bean;
 
+/**
+ * 构造方法的每一个参数的配置
+ */
 public class ConstructorArg {
     private String type;
     private String value;
@@ -27,5 +30,14 @@ public class ConstructorArg {
 
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+    @Override
+    public String toString() {
+        return "ConstructorArg{" +
+                "type='" + type + '\'' +
+                ", value='" + value + '\'' +
+                ", ref='" + ref + '\'' +
+                '}';
     }
 }

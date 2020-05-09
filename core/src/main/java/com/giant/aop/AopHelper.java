@@ -9,6 +9,13 @@ public class AopHelper {
     private AopHelper(){
 
     }
+
+    /**
+     * 解析方法，获取方法的切点名称
+     * @param clazz
+     * @param method
+     * @return
+     */
     public String getAopMethodName(Class<?> clazz, Method method) {
         String className=clazz.getCanonicalName();
         String methodName=method.getName();
@@ -29,6 +36,11 @@ public class AopHelper {
         return getAopMethodName(method.getDeclaringClass(),method);
     }
 
+    /**
+     * 解析成正则表达式
+     * @param pointName
+     * @return
+     */
     public String getPointName(String pointName) {
         pointName=pointName.replace("execution(","").trim();
         pointName=pointName.substring(0,pointName.lastIndexOf(")"));
@@ -48,6 +60,12 @@ public class AopHelper {
         return Pattern.matches(getPointName(pointName),getAopMethodName(clazz,method));
     }
 
+    /**
+     * 判断指定方法是否与该matchesPointName正则表达式匹配
+     * @param matchesPointName
+     * @param method
+     * @return
+     */
     public boolean isAopPointcut(String matchesPointName,Method method){
         return Pattern.matches(matchesPointName,getAopMethodName(method));
     }
